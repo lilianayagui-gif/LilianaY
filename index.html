@@ -308,6 +308,22 @@
       <button type="submit" class="primaryBtn" id="authSubmitBtn">Crear mi cuenta</button>
     </form>
     <button type="button" class="linkBtn" id="authToggleBtn">Ya tengo cuenta, quiero entrar</button>
+    <br>
+    <button type="button" class="linkBtn hidden" id="forgotBtn">¿Olvidaste tu contraseña?</button>
+  </div>
+</div>
+
+<!-- Pantalla de poner una contraseña nueva (llega desde el link del correo) -->
+<div id="resetScreen" class="hidden">
+  <div class="setupCard">
+    <h1>Pon tu nueva contraseña</h1>
+    <p>Escribe la contraseña que quieres usar de ahora en adelante para entrar a tu planner.</p>
+    <div id="resetError" class="authError hidden"></div>
+    <form id="resetForm">
+      <label for="newPassword">Nueva contraseña</label>
+      <input type="password" id="newPassword" required minlength="6" autocomplete="new-password">
+      <button type="submit" class="primaryBtn">Guardar nueva contraseña</button>
+    </form>
   </div>
 </div>
 
@@ -483,6 +499,7 @@
   var authToggleBtn = document.getElementById('authToggleBtn');
   var authError = document.getElementById('authError');
   var authNote = document.getElementById('authNote');
+  var forgotBtn = document.getElementById('forgotBtn');
 
   function setAuthMode(signup){
     isSignup = signup;
@@ -495,6 +512,7 @@
       authSubmitBtn.textContent = 'Crear mi cuenta';
       authToggleBtn.textContent = 'Ya tengo cuenta, quiero entrar';
       document.getElementById('nameInput').required = true;
+      forgotBtn.classList.add('hidden');
     }else{
       authTitle.textContent = 'Hola de nuevo';
       authSubtitle.textContent = 'Entra con tu correo y tu contraseña.';
@@ -502,9 +520,32 @@
       authSubmitBtn.textContent = 'Entrar';
       authToggleBtn.textContent = 'No tengo cuenta, quiero crearla';
       document.getElementById('nameInput').required = false;
+      forgotBtn.classList.remove('hidden');
     }
   }
   authToggleBtn.addEventListener('click', function(){ setAuthMode(!isSignup); });
+
+  forgotBtn.addEventListener('click', function(){
+    authError.classList.add('hidden');
+    authNote.classList.add('hidden');
+    var email = document.getElementById('authEmail').value.trim();
+    if(!email){
+      showAuthError('Escribe tu correo arriba primero, para saber a dónde mandarte el link.');
+      return;
+    }
+    forgotBtn.disabled = true;
+    supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + window.location.pathname
+    }).then(function(res){
+      forgotBtn.disabled = false;
+      if(res.error){
+        showAuthError(res.error.message);
+        return;
+      }
+      authNote.textContent = 'Listo. Revisa tu correo (' + email + ') y entra al link para poner una contraseña nueva.';
+      authNote.classList.remove('hidden');
+    });
+  });
 
   function showAuthError(msg){
     authError.textContent = msg;
@@ -553,6 +594,34 @@
         }
         boot(res.data.session.user);
       });
+    }
+  });
+
+  /* ---------- Poner contraseña nueva (llega desde el link del correo) ---------- */
+  var resetError = document.getElementById('resetError');
+  document.getElementById('resetForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    resetError.classList.add('hidden');
+    var newPassword = document.getElementById('newPassword').value;
+    var submitBtn = e.target.querySelector('button[type=submit]');
+    submitBtn.disabled = true;
+    supabase.auth.updateUser({ password: newPassword }).then(function(res){
+      submitBtn.disabled = false;
+      if(res.error){
+        resetError.textContent = res.error.message;
+        resetError.classList.remove('hidden');
+        return;
+      }
+      document.getElementById('resetScreen').classList.add('hidden');
+      boot(res.data.user);
+    });
+  });
+
+  supabase.auth.onAuthStateChange(function(event, session){
+    if(event === 'PASSWORD_RECOVERY'){
+      document.getElementById('authScreen').classList.add('hidden');
+      document.getElementById('app').classList.add('hidden');
+      document.getElementById('resetScreen').classList.remove('hidden');
     }
   });
 
