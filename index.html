@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --lilac:#8B8FE0;
+    --lilac-dark:#6669B8;
+    --lilac-light:#EBEBFA;
+    --beige:#F6F0E6;
+    --beige-card:#FFFFFF;
+    --beige-dark:#E7DCC7;
+    --text-dark:#3A3651;
+    --text-muted:#8783A0;
+    --rose:#E0838A;
+    --rose-light:#FBEBEC;
+    --amber:#E3B679;
+    --amber-light:#FBF1E3;
+    --sage:#8FBFA0;
+    --sage-light:#EAF5EE;
+    --radius:18px;
+    --shadow:0 4px 24px rgba(107,105,184,0.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:'Plus Jakarta Sans', system-ui, sans-serif;
+    background:linear-gradient(180deg, var(--beige) 0%, #F1E9DA 100%);
+    color:var(--text-dark);
+    min-height:100vh;
+  }
+  .hidden{display:none !important;}
+
+  /* ---------- Pantalla de cuenta ---------- */
+  #authScreen{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+  .setupCard{
+    background:var(--beige-card);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+    padding:40px;
+    width:100%;
+    max-width:420px;
+    text-align:center;
+  }
+  .setupCard h1{
+    font-size:24px;
+    font-weight:800;
+    margin-bottom:8px;
+    color:var(--lilac-dark);
+  }
+  .setupCard p{
+    color:var(--text-muted);
+    font-size:14px;
+    margin-bottom:22px;
+    line-height:1.5;
+  }
+  .setupCard label{
+    display:block;
+    text-align:left;
+    font-size:13px;
+    font-weight:600;
+    margin-bottom:6px;
+    color:var(--text-dark);
+  }
+  .setupCard input[type="text"],
+  .setupCard input[type="email"],
+  .setupCard input[type="password"]{
+    width:100%;
+    padding:12px 14px;
+    border-radius:12px;
+    border:1.5px solid var(--beige-dark);
+    font-family:inherit;
+    font-size:15px;
+    margin-bottom:16px;
+    outline:none;
+    transition:border-color .15s;
+  }
+  .setupCard input:focus{border-color:var(--lilac);}
+  .swatchRow{
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+  }
+  .swatch{
+    width:36px;height:36px;border-radius:50%;
+    cursor:pointer;
+    border:3px solid transparent;
+    transition:transform .15s, border-color .15s;
+  }
+  .swatch:hover{transform:scale(1.1);}
+  .swatch.selected{border-color:var(--text-dark);}
+  .primaryBtn{
+    background:var(--lilac);
+    color:#fff;
+    border:none;
+    padding:13px 20px;
+    border-radius:12px;
+    font-family:inherit;
+    font-weight:700;
+    font-size:15px;
+    cursor:pointer;
+    width:100%;
+    transition:background .15s;
+  }
+  .primaryBtn:hover{background:var(--lilac-dark);}
+  .primaryBtn:disabled{opacity:.6;cursor:default;}
+  .linkBtn{
+    border:none;background:none;color:var(--lilac-dark);
+    font-family:inherit;font-size:13px;font-weight:600;
+    cursor:pointer;margin-top:16px;text-decoration:underline;
+  }
+  .authError{
+    background:var(--rose-light);color:#B84550;
+    font-size:13px;padding:10px 12px;border-radius:10px;
+    margin-bottom:16px;text-align:left;
+  }
+  .authNote{
+    background:var(--lilac-light);color:var(--lilac-dark);
+    font-size:12px;padding:10px 12px;border-radius:10px;
+    margin-bottom:16px;text-align:left;line-height:1.4;
+  }
+
+  /* ---------- App principal ---------- */
+  #app{max-width:960px;margin:0 auto;padding:28px 20px 60px;}
+  header.appHeader{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:26px;
+    flex-wrap:wrap;
+    gap:16px;
+  }
+  .profileBlock{display:flex;align-items:center;gap:12px;}
+  .avatar{
+    width:48px;height:48px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:700;font-size:17px;
+    flex-shrink:0;
+  }
+  .profileBlock h2{font-size:19px;font-weight:800;}
+  .profileBlock span{font-size:13px;color:var(--text-muted);}
+
+  .headerRight{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+  .tabs{display:flex;gap:8px;background:var(--beige-dark);padding:4px;border-radius:14px;}
+  .tabBtn{
+    border:none;background:transparent;padding:9px 18px;
+    border-radius:11px;font-family:inherit;font-weight:600;
+    font-size:14px;color:var(--text-dark);cursor:pointer;
+    transition:background .15s, color .15s;
+  }
+  .tabBtn.active{background:var(--lilac);color:#fff;}
+  .logoutBtn{
+    border:none;background:none;color:var(--text-muted);
+    font-family:inherit;font-size:13px;font-weight:600;
+    cursor:pointer;text-decoration:underline;
+  }
+  .logoutBtn:hover{color:var(--rose);}
+
+  .card{
+    background:var(--beige-card);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:24px;
+  }
+
+  /* ---------- Formulario de tareas ---------- */
+  #taskFormCard{margin-bottom:24px;}
+  #taskFormCard h3{font-size:16px;font-weight:800;margin-bottom:16px;}
+  #taskForm{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  #taskForm .full{grid-column:1 / -1;}
+  #taskForm label{font-size:12px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:5px;}
+  #taskForm input, #taskForm select, #taskForm textarea{
+    width:100%;padding:10px 12px;border-radius:10px;
+    border:1.5px solid var(--beige-dark);font-family:inherit;
+    font-size:14px;outline:none;transition:border-color .15s;
+    background:#fff;color:var(--text-dark);
+  }
+  #taskForm input:focus, #taskForm select:focus, #taskForm textarea:focus{border-color:var(--lilac);}
+  #taskForm textarea{resize:vertical;min-height:44px;}
+  #taskForm button{margin-top:4px;}
+
+  /* ---------- Filtros ---------- */
+  .filterBar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+  .filterBar select{
+    padding:8px 12px;border-radius:10px;border:1.5px solid var(--beige-dark);
+    font-family:inherit;font-size:13px;background:#fff;color:var(--text-dark);
+  }
+
+  /* ---------- Lista de tareas ---------- */
+  .taskCard{
+    background:var(--beige-card);
+    border-radius:14px;
+    padding:16px 18px;
+    box-shadow:var(--shadow);
+    margin-bottom:12px;
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+  }
+  .taskCard.done{opacity:.55;}
+  .taskCheck{
+    width:22px;height:22px;border-radius:7px;
+    border:2px solid var(--lilac);
+    flex-shrink:0;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    margin-top:2px;
+    transition:background .15s;
+  }
+  .taskCheck.checked{background:var(--lilac);}
+  .taskCheck svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:3;display:none;}
+  .taskCheck.checked svg{display:block;}
+  .taskBody{flex:1;min-width:0;}
+  .taskTop{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;}
+  .taskTitle{font-weight:700;font-size:15px;}
+  .taskCard.done .taskTitle{text-decoration:line-through;color:var(--text-muted);}
+  .badge{
+    font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;
+    white-space:nowrap;
+  }
+  .badge.personal{background:var(--lilac-light);color:var(--lilac-dark);}
+  .badge.profesional{background:var(--amber-light);color:#9C6B2E;}
+  .badge.alta{background:var(--rose-light);color:#B84550;}
+  .badge.media{background:var(--amber-light);color:#9C6B2E;}
+  .badge.baja{background:var(--sage-light);color:#4C8763;}
+  .badge.tag{background:var(--beige-dark);color:var(--text-dark);}
+  .badge.overdue{background:var(--rose);color:#fff;}
+  .taskMeta{font-size:12px;color:var(--text-muted);display:flex;gap:12px;flex-wrap:wrap;margin-bottom:4px;}
+  .taskNotes{font-size:13px;color:var(--text-muted);line-height:1.4;}
+  .taskActions{display:flex;flex-direction:column;gap:6px;align-items:flex-end;}
+  .statusSelect{
+    font-size:12px;padding:6px 10px;border-radius:8px;
+    border:1.5px solid var(--beige-dark);font-family:inherit;background:#fff;
+    color:var(--text-dark);cursor:pointer;
+  }
+  .deleteBtn{
+    border:none;background:none;color:var(--text-muted);cursor:pointer;
+    font-size:12px;text-decoration:underline;padding:0;
+  }
+  .deleteBtn:hover{color:var(--rose);}
+  .emptyState{text-align:center;color:var(--text-muted);padding:40px 10px;font-size:14px;}
+
+  /* ---------- Tablero ---------- */
+  .dashGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:20px;}
+  .statCard{text-align:center;}
+  .statCard .ring{margin:0 auto 10px;}
+  .statCard .bigNum{font-size:30px;font-weight:800;color:var(--lilac-dark);}
+  .statCard .label{font-size:13px;color:var(--text-muted);font-weight:600;margin-top:4px;}
+  .sectionTitle{font-size:15px;font-weight:800;margin-bottom:14px;}
+  .catBarRow{margin-bottom:16px;}
+  .catBarLabel{display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:6px;}
+  .catBarTrack{background:var(--beige-dark);border-radius:20px;height:10px;overflow:hidden;}
+  .catBarFill{height:100%;border-radius:20px;transition:width .3s;}
+  .dashCols{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .listMini li{
+    list-style:none;padding:10px 0;border-bottom:1px solid var(--beige-dark);
+    font-size:13px;display:flex;justify-content:space-between;gap:8px;
+  }
+  .listMini li:last-child{border-bottom:none;}
+  .listMini .miniTitle{font-weight:600;}
+  .listMini .miniMeta{color:var(--text-muted);font-size:12px;white-space:nowrap;}
+
+  .loadingState{text-align:center;color:var(--text-muted);padding:40px 10px;font-size:14px;}
+
+  @media(max-width:720px){
+    #taskForm{grid-template-columns:1fr;}
+    .dashGrid{grid-template-columns:1fr;}
+    .dashCols{grid-template-columns:1fr;}
+    header.appHeader{flex-direction:column;align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+<!-- Pantalla de cuenta: crear cuenta o entrar -->
+<div id="authScreen">
+  <div class="setupCard">
+    <h1 id="authTitle">Bienvenida a tu planner</h1>
+    <p id="authSubtitle">Crea tu cuenta con tu correo y una contraseña. Tus pendientes van a quedar ligados a esa cuenta, así que puedes entrar desde cualquier aparato.</p>
+
+    <div id="authError" class="authError hidden"></div>
+    <div id="authNote" class="authNote hidden"></div>
+
+    <form id="authForm">
+      <label for="authEmail">Tu correo</label>
+      <input type="email" id="authEmail" required autocomplete="email">
+
+      <label for="authPassword">Tu contraseña</label>
+      <input type="password" id="authPassword" required minlength="6" autocomplete="current-password">
+
+      <div id="signupExtra">
+        <label for="nameInput">Tu nombre</label>
+        <input type="text" id="nameInput" placeholder="Por ejemplo, Lily" maxlength="30">
+        <label>Elige un color</label>
+        <div class="swatchRow" id="swatchRow"></div>
+      </div>
+
+      <button type="submit" class="primaryBtn" id="authSubmitBtn">Crear mi cuenta</button>
+    </form>
+    <button type="button" class="linkBtn" id="authToggleBtn">Ya tengo cuenta, quiero entrar</button>
+  </div>
+</div>
+
+<!-- App principal -->
+<div id="app" class="hidden">
+  <header class="appHeader">
+    <div class="profileBlock">
+      <div class="avatar" id="avatarCircle"></div>
+      <div>
+        <h2 id="greeting"></h2>
+        <span>Tu espacio de pendientes</span>
+      </div>
+    </div>
+    <div class="headerRight">
+      <div class="tabs">
+        <button class="tabBtn active" data-tab="tareas">Mis pendientes</button>
+        <button class="tabBtn" data-tab="tablero">Tablero</button>
+      </div>
+      <button class="logoutBtn" id="logoutBtn">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <!-- Vista: pendientes -->
+  <section id="tareasTab">
+    <div class="card" id="taskFormCard">
+      <h3>Agregar un pendiente</h3>
+      <form id="taskForm">
+        <div class="full">
+          <label for="taskTitle">Qué tienes pendiente</label>
+          <input type="text" id="taskTitle" placeholder="Escribe tu pendiente" required maxlength="80">
+        </div>
+        <div>
+          <label for="taskCategory">Categoría</label>
+          <select id="taskCategory">
+            <option value="personal">Personal</option>
+            <option value="profesional">Profesional</option>
+          </select>
+        </div>
+        <div>
+          <label for="taskTag">Etiqueta adicional (opcional)</label>
+          <input type="text" id="taskTag" placeholder="Por ejemplo, Casa o Proyecto X" maxlength="24">
+        </div>
+        <div>
+          <label for="taskUrgency">Nivel de urgencia</label>
+          <select id="taskUrgency">
+            <option value="alta">Urgente</option>
+            <option value="media">Media</option>
+            <option value="baja" selected>Baja</option>
+          </select>
+        </div>
+        <div>
+          <label for="taskDue">Fecha límite (opcional)</label>
+          <input type="date" id="taskDue">
+        </div>
+        <div class="full">
+          <label for="taskNotes">Notas cortas (opcional)</label>
+          <textarea id="taskNotes" maxlength="200" placeholder="Algún detalle que te sirva recordar"></textarea>
+        </div>
+        <div class="full">
+          <button type="submit" class="primaryBtn">Agregar pendiente</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="filterBar">
+      <select id="filterCategory">
+        <option value="todas">Todas las categorías</option>
+        <option value="personal">Personal</option>
+        <option value="profesional">Profesional</option>
+      </select>
+      <select id="filterUrgency">
+        <option value="todas">Toda urgencia</option>
+        <option value="alta">Urgente</option>
+        <option value="media">Media</option>
+        <option value="baja">Baja</option>
+      </select>
+      <select id="filterStatus">
+        <option value="todas">Todo estado</option>
+        <option value="pendiente">Pendiente</option>
+        <option value="en_proceso">En proceso</option>
+        <option value="completado">Completado</option>
+      </select>
+    </div>
+
+    <div id="taskList"><div class="loadingState">Cargando tus pendientes...</div></div>
+  </section>
+
+  <!-- Vista: tablero -->
+  <section id="tableroTab" class="hidden">
+    <div class="dashGrid">
+      <div class="card statCard">
+        <svg class="ring" id="ringSvg" width="90" height="90" viewBox="0 0 90 90"></svg>
+        <div class="label">Avance general</div>
+      </div>
+      <div class="card statCard">
+        <div class="bigNum" id="doneCount">0</div>
+        <div class="label" id="doneLabel">completadas de 0</div>
+      </div>
+      <div class="card statCard">
+        <div class="bigNum" id="overdueCount">0</div>
+        <div class="label">urgentes o vencidos</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:18px;">
+      <div class="sectionTitle">Avance por categoría</div>
+      <div class="catBarRow">
+        <div class="catBarLabel"><span>Personal</span><span id="personalPct">0%</span></div>
+        <div class="catBarTrack"><div class="catBarFill" id="personalBar" style="width:0%;background:var(--lilac);"></div></div>
+      </div>
+      <div class="catBarRow">
+        <div class="catBarLabel"><span>Profesional</span><span id="profesionalPct">0%</span></div>
+        <div class="catBarTrack"><div class="catBarFill" id="profesionalBar" style="width:0%;background:var(--amber);"></div></div>
+      </div>
+    </div>
+
+    <div class="dashCols">
+      <div class="card">
+        <div class="sectionTitle">Próximos plazos</div>
+        <ul class="listMini" id="upcomingList"></ul>
+      </div>
+      <div class="card">
+        <div class="sectionTitle">Urgentes o vencidos</div>
+        <ul class="listMini" id="urgentList"></ul>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script>
+(function(){
+  var COLORS = ['#8B8FE0','#E3B679','#8FBFA0','#E0838A','#6669B8','#C9A876'];
+
+  if(typeof window.supabase === 'undefined'){
+    document.getElementById('authError').textContent = 'No se pudo cargar la conexión con tu base de datos. Revisa tu conexión a internet y recarga la página.';
+    document.getElementById('authError').classList.remove('hidden');
+    document.getElementById('authForm').querySelector('button[type=submit]').disabled = true;
+    return;
+  }
+  var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  var tasks = [];
+  var currentUser = null;
+
+  function todayStr(){
+    var d = new Date();
+    return d.toISOString().slice(0,10);
+  }
+
+  /* ---------- Colores de cuenta nueva ---------- */
+  var selectedColor = COLORS[0];
+  var swatchRow = document.getElementById('swatchRow');
+  COLORS.forEach(function(c, i){
+    var el = document.createElement('div');
+    el.className = 'swatch' + (i===0 ? ' selected' : '');
+    el.style.background = c;
+    el.addEventListener('click', function(){
+      document.querySelectorAll('.swatch').forEach(function(s){ s.classList.remove('selected'); });
+      el.classList.add('selected');
+      selectedColor = c;
+    });
+    swatchRow.appendChild(el);
+  });
+
+  /* ---------- Pantalla de cuenta: alternar crear / entrar ---------- */
+  var isSignup = true;
+  var authTitle = document.getElementById('authTitle');
+  var authSubtitle = document.getElementById('authSubtitle');
+  var signupExtra = document.getElementById('signupExtra');
+  var authSubmitBtn = document.getElementById('authSubmitBtn');
+  var authToggleBtn = document.getElementById('authToggleBtn');
+  var authError = document.getElementById('authError');
+  var authNote = document.getElementById('authNote');
+
+  function setAuthMode(signup){
+    isSignup = signup;
+    authError.classList.add('hidden');
+    authNote.classList.add('hidden');
+    if(signup){
+      authTitle.textContent = 'Bienvenida a tu planner';
+      authSubtitle.textContent = 'Crea tu cuenta con tu correo y una contraseña. Tus pendientes van a quedar ligados a esa cuenta, así que puedes entrar desde cualquier aparato.';
+      signupExtra.classList.remove('hidden');
+      authSubmitBtn.textContent = 'Crear mi cuenta';
+      authToggleBtn.textContent = 'Ya tengo cuenta, quiero entrar';
+      document.getElementById('nameInput').required = true;
+    }else{
+      authTitle.textContent = 'Hola de nuevo';
+      authSubtitle.textContent = 'Entra con tu correo y tu contraseña.';
+      signupExtra.classList.add('hidden');
+      authSubmitBtn.textContent = 'Entrar';
+      authToggleBtn.textContent = 'No tengo cuenta, quiero crearla';
+      document.getElementById('nameInput').required = false;
+    }
+  }
+  authToggleBtn.addEventListener('click', function(){ setAuthMode(!isSignup); });
+
+  function showAuthError(msg){
+    authError.textContent = msg;
+    authError.classList.remove('hidden');
+  }
+
+  document.getElementById('authForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    authError.classList.add('hidden');
+    authNote.classList.add('hidden');
+    var email = document.getElementById('authEmail').value.trim();
+    var password = document.getElementById('authPassword').value;
+    authSubmitBtn.disabled = true;
+
+    if(isSignup){
+      var name = document.getElementById('nameInput').value.trim();
+      if(!name){
+        authSubmitBtn.disabled = false;
+        showAuthError('Falta tu nombre.');
+        return;
+      }
+      supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: { data: { name: name, color: selectedColor } }
+      }).then(function(res){
+        authSubmitBtn.disabled = false;
+        if(res.error){
+          showAuthError(res.error.message);
+          return;
+        }
+        if(res.data.session){
+          boot(res.data.session.user);
+        }else{
+          authNote.textContent = 'Cuenta creada. Revisa tu correo para confirmarla y luego entra con tu contraseña.';
+          authNote.classList.remove('hidden');
+          setAuthMode(false);
+        }
+      });
+    }else{
+      supabase.auth.signInWithPassword({ email: email, password: password }).then(function(res){
+        authSubmitBtn.disabled = false;
+        if(res.error){
+          showAuthError(res.error.message);
+          return;
+        }
+        boot(res.data.session.user);
+      });
+    }
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', function(){
+    supabase.auth.signOut().then(function(){
+      currentUser = null;
+      tasks = [];
+      document.getElementById('app').classList.add('hidden');
+      document.getElementById('authScreen').classList.remove('hidden');
+      setAuthMode(true);
+    });
+  });
+
+  /* ---------- Arranque de la app tras entrar ---------- */
+  function boot(user){
+    currentUser = user;
+    document.getElementById('authScreen').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+
+    var meta = user.user_metadata || {};
+    var name = meta.name || user.email;
+    var color = meta.color || COLORS[0];
+    var initials = name.trim().split(/\s+/).map(function(w){return w[0];}).slice(0,2).join('').toUpperCase();
+    var avatarEl = document.getElementById('avatarCircle');
+    avatarEl.style.background = color;
+    avatarEl.textContent = initials;
+    document.getElementById('greeting').textContent = 'Hola, ' + name;
+
+    loadTasks();
+  }
+
+  /* ---------- Tabs ---------- */
+  document.querySelectorAll('.tabBtn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.tabBtn').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      var tab = btn.getAttribute('data-tab');
+      document.getElementById('tareasTab').classList.toggle('hidden', tab !== 'tareas');
+      document.getElementById('tableroTab').classList.toggle('hidden', tab !== 'tablero');
+      if(tab === 'tablero') renderDashboard();
+    });
+  });
+
+  /* ---------- Cargar y guardar pendientes en Supabase ---------- */
+  function loadTasks(){
+    supabase.from('tasks').select('*').order('created_at', { ascending: false }).then(function(res){
+      if(res.error){
+        document.getElementById('taskList').innerHTML = '<div class="card emptyState">No se pudieron cargar tus pendientes: ' + res.error.message + '</div>';
+        return;
+      }
+      tasks = res.data;
+      renderTasks();
+      renderDashboard();
+    });
+  }
+
+  /* ---------- Formulario de tareas ---------- */
+  document.getElementById('taskForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var title = document.getElementById('taskTitle').value.trim();
+    if(!title) return;
+    var newTask = {
+      user_id: currentUser.id,
+      title: title,
+      category: document.getElementById('taskCategory').value,
+      tag: document.getElementById('taskTag').value.trim(),
+      urgency: document.getElementById('taskUrgency').value,
+      due: document.getElementById('taskDue').value || null,
+      notes: document.getElementById('taskNotes').value.trim(),
+      status: 'pendiente'
+    };
+    supabase.from('tasks').insert(newTask).select().then(function(res){
+      if(res.error){
+        alert('No se pudo guardar tu pendiente: ' + res.error.message);
+        return;
+      }
+      tasks.unshift(res.data[0]);
+      e.target.reset();
+      document.getElementById('taskUrgency').value = 'baja';
+      renderTasks();
+    });
+  });
+
+  ['filterCategory','filterUrgency','filterStatus'].forEach(function(id){
+    document.getElementById(id).addEventListener('change', renderTasks);
+  });
+
+  var URGENCY_LABEL = { alta:'Urgente', media:'Media', baja:'Baja' };
+  var STATUS_LABEL = { pendiente:'Pendiente', en_proceso:'En proceso', completado:'Completado' };
+
+  function isOverdue(task){
+    if(!task.due || task.status === 'completado') return false;
+    return task.due < todayStr();
+  }
+
+  function updateTask(id, changes){
+    supabase.from('tasks').update(changes).eq('id', id).then(function(res){
+      if(res.error){
+        alert('No se pudo guardar el cambio: ' + res.error.message);
+        return;
+      }
+      var t = tasks.find(function(x){ return x.id === id; });
+      if(t) Object.assign(t, changes);
+      renderTasks();
+    });
+  }
+
+  function deleteTask(id){
+    supabase.from('tasks').delete().eq('id', id).then(function(res){
+      if(res.error){
+        alert('No se pudo eliminar: ' + res.error.message);
+        return;
+      }
+      tasks = tasks.filter(function(x){ return x.id !== id; });
+      renderTasks();
+    });
+  }
+
+  function renderTasks(){
+    var list = document.getElementById('taskList');
+    var fCat = document.getElementById('filterCategory').value;
+    var fUrg = document.getElementById('filterUrgency').value;
+    var fSt = document.getElementById('filterStatus').value;
+
+    var filtered = tasks.filter(function(t){
+      if(fCat !== 'todas' && t.category !== fCat) return false;
+      if(fUrg !== 'todas' && t.urgency !== fUrg) return false;
+      if(fSt !== 'todas' && t.status !== fSt) return false;
+      return true;
+    });
+
+    var urgencyRank = { alta:0, media:1, baja:2 };
+    filtered.sort(function(a,b){
+      if((a.status === 'completado') !== (b.status === 'completado')){
+        return a.status === 'completado' ? 1 : -1;
+      }
+      if(urgencyRank[a.urgency] !== urgencyRank[b.urgency]){
+        return urgencyRank[a.urgency] - urgencyRank[b.urgency];
+      }
+      if(a.due && b.due) return a.due < b.due ? -1 : 1;
+      if(a.due) return -1;
+      if(b.due) return 1;
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
+
+    list.innerHTML = '';
+    if(filtered.length === 0){
+      list.innerHTML = '<div class="card emptyState">Todavía no hay pendientes registrados con estos filtros.</div>';
+      return;
+    }
+
+    filtered.forEach(function(t){
+      var card = document.createElement('div');
+      card.className = 'taskCard' + (t.status === 'completado' ? ' done' : '');
+
+      var check = document.createElement('div');
+      check.className = 'taskCheck' + (t.status === 'completado' ? ' checked' : '');
+      check.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+      check.addEventListener('click', function(){
+        updateTask(t.id, { status: t.status === 'completado' ? 'pendiente' : 'completado' });
+      });
+
+      var body = document.createElement('div');
+      body.className = 'taskBody';
+
+      var top = document.createElement('div');
+      top.className = 'taskTop';
+      var title = document.createElement('span');
+      title.className = 'taskTitle';
+      title.textContent = t.title;
+      top.appendChild(title);
+
+      var catBadge = document.createElement('span');
+      catBadge.className = 'badge ' + t.category;
+      catBadge.textContent = t.category === 'personal' ? 'Personal' : 'Profesional';
+      top.appendChild(catBadge);
+
+      var urgBadge = document.createElement('span');
+      urgBadge.className = 'badge ' + t.urgency;
+      urgBadge.textContent = URGENCY_LABEL[t.urgency];
+      top.appendChild(urgBadge);
+
+      if(t.tag){
+        var tagBadge = document.createElement('span');
+        tagBadge.className = 'badge tag';
+        tagBadge.textContent = t.tag;
+        top.appendChild(tagBadge);
+      }
+      if(isOverdue(t)){
+        var overdueBadge = document.createElement('span');
+        overdueBadge.className = 'badge overdue';
+        overdueBadge.textContent = 'Vencido';
+        top.appendChild(overdueBadge);
+      }
+      body.appendChild(top);
+
+      var meta = document.createElement('div');
+      meta.className = 'taskMeta';
+      if(t.due){
+        var dueSpan = document.createElement('span');
+        dueSpan.textContent = 'Fecha límite: ' + formatDate(t.due);
+        meta.appendChild(dueSpan);
+      }
+      body.appendChild(meta);
+
+      if(t.notes){
+        var notes = document.createElement('div');
+        notes.className = 'taskNotes';
+        notes.textContent = t.notes;
+        body.appendChild(notes);
+      }
+
+      var actions = document.createElement('div');
+      actions.className = 'taskActions';
+      var statusSelect = document.createElement('select');
+      statusSelect.className = 'statusSelect';
+      ['pendiente','en_proceso','completado'].forEach(function(s){
+        var opt = document.createElement('option');
+        opt.value = s;
+        opt.textContent = STATUS_LABEL[s];
+        if(s === t.status) opt.selected = true;
+        statusSelect.appendChild(opt);
+      });
+      statusSelect.addEventListener('change', function(){
+        updateTask(t.id, { status: statusSelect.value });
+      });
+      var delBtn = document.createElement('button');
+      delBtn.className = 'deleteBtn';
+      delBtn.textContent = 'Eliminar';
+      delBtn.addEventListener('click', function(){
+        deleteTask(t.id);
+      });
+      actions.appendChild(statusSelect);
+      actions.appendChild(delBtn);
+
+      card.appendChild(check);
+      card.appendChild(body);
+      card.appendChild(actions);
+      list.appendChild(card);
+    });
+  }
+
+  function formatDate(dstr){
+    var parts = dstr.split('-');
+    var meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    return parts[2] + ' de ' + meses[parseInt(parts[1],10)-1] + ' de ' + parts[0];
+  }
+
+  /* ---------- Tablero ---------- */
+  function renderDashboard(){
+    var total = tasks.length;
+    var done = tasks.filter(function(t){ return t.status === 'completado'; }).length;
+    var pct = total ? Math.round((done/total)*100) : 0;
+
+    drawRing(pct);
+    document.getElementById('doneCount').textContent = done;
+    document.getElementById('doneLabel').textContent = 'completadas de ' + total;
+
+    var urgentOrOverdue = tasks.filter(function(t){
+      return t.status !== 'completado' && (t.urgency === 'alta' || isOverdue(t));
+    });
+    document.getElementById('overdueCount').textContent = urgentOrOverdue.length;
+
+    ['personal','profesional'].forEach(function(cat){
+      var catTasks = tasks.filter(function(t){ return t.category === cat; });
+      var catDone = catTasks.filter(function(t){ return t.status === 'completado'; }).length;
+      var catPct = catTasks.length ? Math.round((catDone/catTasks.length)*100) : 0;
+      document.getElementById(cat + 'Pct').textContent = catPct + '%';
+      document.getElementById(cat + 'Bar').style.width = catPct + '%';
+    });
+
+    var upcoming = tasks
+      .filter(function(t){ return t.status !== 'completado' && t.due && t.due >= todayStr(); })
+      .sort(function(a,b){ return a.due < b.due ? -1 : 1; })
+      .slice(0,5);
+    var upcomingList = document.getElementById('upcomingList');
+    upcomingList.innerHTML = '';
+    if(upcoming.length === 0){
+      upcomingList.innerHTML = '<li class="emptyState" style="padding:12px 0;">Sin plazos próximos por ahora.</li>';
+    }else{
+      upcoming.forEach(function(t){
+        var li = document.createElement('li');
+        li.innerHTML = '<span class="miniTitle">'+escapeHtml(t.title)+'</span><span class="miniMeta">'+formatDate(t.due)+'</span>';
+        upcomingList.appendChild(li);
+      });
+    }
+
+    var urgentSorted = urgentOrOverdue.slice(0,6);
+    var urgentList = document.getElementById('urgentList');
+    urgentList.innerHTML = '';
+    if(urgentSorted.length === 0){
+      urgentList.innerHTML = '<li class="emptyState" style="padding:12px 0;">No tienes urgentes ni vencidos. Vas muy bien.</li>';
+    }else{
+      urgentSorted.forEach(function(t){
+        var metaTxt = isOverdue(t) ? 'Vencido' : 'Urgente';
+        var li = document.createElement('li');
+        li.innerHTML = '<span class="miniTitle">'+escapeHtml(t.title)+'</span><span class="miniMeta">'+metaTxt+'</span>';
+        urgentList.appendChild(li);
+      });
+    }
+  }
+
+  function escapeHtml(str){
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function drawRing(pct){
+    var svg = document.getElementById('ringSvg');
+    var r = 38, cx = 45, cy = 45;
+    var circ = 2 * Math.PI * r;
+    var offset = circ - (pct/100) * circ;
+    svg.innerHTML =
+      '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="#E7DCC7" stroke-width="9"></circle>' +
+      '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="#8B8FE0" stroke-width="9" ' +
+      'stroke-linecap="round" stroke-dasharray="'+circ+'" stroke-dashoffset="'+offset+'" ' +
+      'transform="rotate(-90 '+cx+' '+cy+')"></circle>' +
+      '<text x="'+cx+'" y="'+(cy+6)+'" text-anchor="middle" font-size="18" font-weight="800" fill="#3A3651" font-family="Plus Jakarta Sans, sans-serif">'+pct+'%</text>';
+  }
+
+  /* ---------- Al abrir la página, revisar si ya hay sesión ---------- */
+  setAuthMode(true);
+  supabase.auth.getSession().then(function(res){
+    if(res.data.session){
+      boot(res.data.session.user);
+    }
+  });
+})();
+</script>
+</body>
+</html>
