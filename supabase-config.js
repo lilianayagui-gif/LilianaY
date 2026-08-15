@@ -5,5 +5,5 @@
 // Esta llave no es secreta: esta protegida por las reglas de acceso (RLS)
 // que vamos a crear en la tabla, asi que es normal que quede en este archivo.
 
-const SUPABASE_URL = "PON_AQUI_TU_PROJECT_URL";
-const SUPABASE_ANON_KEY = "PON_AQUI_TU_ANON_KEY";
+const SUPABASE_URL = "https://hhxxrrvxycyujcvmbocg.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_o3jpLaaeaynmVGjNUuzn4w_Y9k7GW50";
