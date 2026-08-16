@@ -11,26 +11,36 @@
     --lilac:#8B8FE0;
     --lilac-dark:#6669B8;
     --lilac-light:#EBEBFA;
+    --sky:#7FA8D9;
+    --sky-dark:#4E7CB0;
+    --sky-light:#E7F0FB;
     --beige:#F6F0E6;
     --beige-card:#FFFFFF;
     --beige-dark:#E7DCC7;
     --text-dark:#3A3651;
     --text-muted:#8783A0;
-    --rose:#E0838A;
-    --rose-light:#FBEBEC;
-    --amber:#E3B679;
-    --amber-light:#FBF1E3;
-    --sage:#8FBFA0;
-    --sage-light:#EAF5EE;
     --radius:18px;
     --shadow:0 4px 24px rgba(107,105,184,0.10);
+    --overlay:rgba(58,54,81,0.45);
+  }
+  body.dark{
+    --lilac-light:#37325C;
+    --sky-light:#2B3A50;
+    --beige:#201E33;
+    --beige-card:#2B2846;
+    --beige-dark:#3B3763;
+    --text-dark:#EDEBFA;
+    --text-muted:#A7A3C9;
+    --shadow:0 4px 24px rgba(0,0,0,0.28);
+    --overlay:rgba(10,9,20,0.6);
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{
     font-family:'Plus Jakarta Sans', system-ui, sans-serif;
-    background:linear-gradient(180deg, var(--beige) 0%, #F1E9DA 100%);
+    background:linear-gradient(180deg, var(--beige) 0%, var(--beige) 100%);
     color:var(--text-dark);
     min-height:100vh;
+    transition:background .2s, color .2s;
   }
   .hidden{display:none !important;}
 
@@ -83,6 +93,8 @@
     margin-bottom:16px;
     outline:none;
     transition:border-color .15s;
+    background:var(--beige-card);
+    color:var(--text-dark);
   }
   .setupCard input:focus{border-color:var(--lilac);}
   .swatchRow{
@@ -121,12 +133,12 @@
     cursor:pointer;margin-top:16px;text-decoration:underline;
   }
   .authError{
-    background:var(--rose-light);color:#B84550;
+    background:var(--lilac-light);color:var(--lilac-dark);
     font-size:13px;padding:10px 12px;border-radius:10px;
-    margin-bottom:16px;text-align:left;
+    margin-bottom:16px;text-align:left;font-weight:700;
   }
   .authNote{
-    background:var(--lilac-light);color:var(--lilac-dark);
+    background:var(--sky-light);color:var(--sky-dark);
     font-size:12px;padding:10px 12px;border-radius:10px;
     margin-bottom:16px;text-align:left;line-height:1.4;
   }
@@ -154,18 +166,26 @@
   .headerRight{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
   .tabs{display:flex;gap:8px;background:var(--beige-dark);padding:4px;border-radius:14px;}
   .tabBtn{
-    border:none;background:transparent;padding:9px 18px;
+    border:none;background:transparent;padding:9px 16px;
     border-radius:11px;font-family:inherit;font-weight:600;
     font-size:14px;color:var(--text-dark);cursor:pointer;
     transition:background .15s, color .15s;
   }
   .tabBtn.active{background:var(--lilac);color:#fff;}
+  .iconBtn{
+    border:1.5px solid var(--beige-dark);background:var(--beige-card);
+    width:38px;height:38px;border-radius:50%;
+    font-size:17px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .15s;
+  }
+  .iconBtn:hover{transform:scale(1.08);}
   .logoutBtn{
     border:none;background:none;color:var(--text-muted);
     font-family:inherit;font-size:13px;font-weight:600;
     cursor:pointer;text-decoration:underline;
   }
-  .logoutBtn:hover{color:var(--rose);}
+  .logoutBtn:hover{color:var(--lilac-dark);}
 
   .card{
     background:var(--beige-card);
@@ -184,71 +204,97 @@
     width:100%;padding:10px 12px;border-radius:10px;
     border:1.5px solid var(--beige-dark);font-family:inherit;
     font-size:14px;outline:none;transition:border-color .15s;
-    background:#fff;color:var(--text-dark);
+    background:var(--beige-card);color:var(--text-dark);
   }
   #taskForm input:focus, #taskForm select:focus, #taskForm textarea:focus{border-color:var(--lilac);}
   #taskForm textarea{resize:vertical;min-height:44px;}
   #taskForm button{margin-top:4px;}
 
+  .emojiRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px;}
+  .emojiBtn{
+    width:38px;height:38px;border-radius:10px;
+    border:1.5px solid var(--beige-dark);background:var(--beige-card);
+    font-size:18px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .15s, border-color .15s;
+  }
+  .emojiBtn:hover{transform:scale(1.08);}
+  .emojiBtn.selected{border-color:var(--lilac);background:var(--lilac-light);}
+
   /* ---------- Filtros ---------- */
   .filterBar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
-  .filterBar select{
+  .filterBar select, .filterBar input[type="text"]{
     padding:8px 12px;border-radius:10px;border:1.5px solid var(--beige-dark);
-    font-family:inherit;font-size:13px;background:#fff;color:var(--text-dark);
+    font-family:inherit;font-size:13px;background:var(--beige-card);color:var(--text-dark);
+  }
+  .filterBar input[type="text"]{flex:1;min-width:160px;}
+
+  .dateFilterChip{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--lilac-light);color:var(--lilac-dark);
+    font-size:13px;font-weight:700;padding:8px 14px;border-radius:20px;
+    margin-bottom:16px;
+  }
+  .dateFilterChip button{
+    border:none;background:none;color:inherit;cursor:pointer;font-size:14px;font-weight:800;
   }
 
   /* ---------- Lista de tareas ---------- */
   .taskCard{
-    background:var(--beige-card);
-    border-radius:14px;
-    padding:16px 18px;
+    border-radius:20px;
+    padding:18px 20px;
     box-shadow:var(--shadow);
-    margin-bottom:12px;
+    margin-bottom:14px;
     display:flex;
     align-items:flex-start;
     gap:14px;
+    position:relative;
+    background:var(--beige-card);
   }
-  .taskCard.done{opacity:.55;}
+  .taskCard.cat-personal{background:var(--lilac-light);}
+  .taskCard.cat-profesional{background:var(--sky-light);}
+  .taskCard.done{background:var(--beige-dark);opacity:.65;}
+  .taskEmoji{font-size:28px;line-height:1;flex-shrink:0;margin-top:2px;}
   .taskCheck{
     width:22px;height:22px;border-radius:7px;
     border:2px solid var(--lilac);
     flex-shrink:0;cursor:pointer;
     display:flex;align-items:center;justify-content:center;
-    margin-top:2px;
+    margin-top:4px;
     transition:background .15s;
+    background:var(--beige-card);
   }
   .taskCheck.checked{background:var(--lilac);}
   .taskCheck svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:3;display:none;}
   .taskCheck.checked svg{display:block;}
   .taskBody{flex:1;min-width:0;}
   .taskTop{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;}
-  .taskTitle{font-weight:700;font-size:15px;}
+  .taskTitle{font-weight:800;font-size:16px;}
   .taskCard.done .taskTitle{text-decoration:line-through;color:var(--text-muted);}
   .badge{
     font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;
-    white-space:nowrap;
+    white-space:nowrap;background:var(--beige-dark);color:var(--text-dark);
   }
-  .badge.personal{background:var(--lilac-light);color:var(--lilac-dark);}
-  .badge.profesional{background:var(--amber-light);color:#9C6B2E;}
-  .badge.alta{background:var(--rose-light);color:#B84550;}
-  .badge.media{background:var(--amber-light);color:#9C6B2E;}
-  .badge.baja{background:var(--sage-light);color:#4C8763;}
-  .badge.tag{background:var(--beige-dark);color:var(--text-dark);}
-  .badge.overdue{background:var(--rose);color:#fff;}
-  .taskMeta{font-size:12px;color:var(--text-muted);display:flex;gap:12px;flex-wrap:wrap;margin-bottom:4px;}
+  .taskMeta{font-size:12px;color:var(--text-muted);display:flex;gap:12px;flex-wrap:wrap;margin-bottom:4px;margin-top:4px;}
   .taskNotes{font-size:13px;color:var(--text-muted);line-height:1.4;}
   .taskActions{display:flex;flex-direction:column;gap:6px;align-items:flex-end;}
   .statusSelect{
     font-size:12px;padding:6px 10px;border-radius:8px;
-    border:1.5px solid var(--beige-dark);font-family:inherit;background:#fff;
+    border:1.5px solid var(--beige-dark);font-family:inherit;background:var(--beige-card);
     color:var(--text-dark);cursor:pointer;
   }
   .deleteBtn{
     border:none;background:none;color:var(--text-muted);cursor:pointer;
     font-size:12px;text-decoration:underline;padding:0;
   }
-  .deleteBtn:hover{color:var(--rose);}
+  .deleteBtn:hover{color:var(--lilac-dark);}
   .emptyState{text-align:center;color:var(--text-muted);padding:40px 10px;font-size:14px;}
+
+  .duePill{
+    font-size:11px;font-weight:800;padding:5px 11px;border-radius:20px;
+    background:var(--lilac-dark);color:#fff;white-space:nowrap;display:inline-block;
+  }
+  .duePill.overdue{background:var(--text-dark);}
 
   /* ---------- Tablero ---------- */
   .dashGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:20px;}
@@ -271,6 +317,36 @@
   .listMini .miniMeta{color:var(--text-muted);font-size:12px;white-space:nowrap;}
 
   .loadingState{text-align:center;color:var(--text-muted);padding:40px 10px;font-size:14px;}
+
+  /* ---------- Calendario ---------- */
+  .calHeader{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .calHeader h3{font-size:16px;font-weight:800;}
+  .calGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+  .calDow{text-align:center;font-size:11px;font-weight:700;color:var(--text-muted);padding-bottom:6px;}
+  .calDay{
+    aspect-ratio:1;border-radius:12px;background:var(--beige);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-size:13px;font-weight:600;cursor:pointer;position:relative;
+    border:1.5px solid transparent;
+  }
+  .calDay.otherMonth{opacity:.35;cursor:default;}
+  .calDay.today{border-color:var(--lilac);}
+  .calDay:hover:not(.otherMonth){background:var(--lilac-light);}
+  .calDot{
+    margin-top:3px;font-size:10px;font-weight:800;color:#fff;
+    background:var(--lilac-dark);border-radius:20px;padding:1px 6px;
+  }
+
+  /* ---------- Modal de confirmación ---------- */
+  .modalOverlay{
+    position:fixed;inset:0;background:var(--overlay);
+    display:flex;align-items:center;justify-content:center;
+    z-index:50;padding:20px;
+  }
+  .modalCard{max-width:360px;text-align:center;}
+  .modalCard p{margin-bottom:18px;line-height:1.5;}
+  .modalActions{display:flex;gap:10px;}
+  .modalActions button{flex:1;width:auto;margin-top:0;}
 
   @media(max-width:720px){
     #taskForm{grid-template-columns:1fr;}
@@ -308,6 +384,22 @@
       <button type="submit" class="primaryBtn" id="authSubmitBtn">Crear mi cuenta</button>
     </form>
     <button type="button" class="linkBtn" id="authToggleBtn">Ya tengo cuenta, quiero entrar</button>
+    <br>
+    <button type="button" class="linkBtn hidden" id="forgotBtn">¿Olvidaste tu contraseña?</button>
+  </div>
+</div>
+
+<!-- Pantalla de poner una contraseña nueva (llega desde el link del correo) -->
+<div id="resetScreen" class="hidden">
+  <div class="setupCard">
+    <h1>Pon tu nueva contraseña</h1>
+    <p>Escribe la contraseña que quieres usar de ahora en adelante para entrar a tu planner.</p>
+    <div id="resetError" class="authError hidden"></div>
+    <form id="resetForm">
+      <label for="newPassword">Nueva contraseña</label>
+      <input type="password" id="newPassword" required minlength="6" autocomplete="new-password">
+      <button type="submit" class="primaryBtn">Guardar nueva contraseña</button>
+    </form>
   </div>
 </div>
 
@@ -324,8 +416,10 @@
     <div class="headerRight">
       <div class="tabs">
         <button class="tabBtn active" data-tab="tareas">Mis pendientes</button>
+        <button class="tabBtn" data-tab="calendario">Calendario</button>
         <button class="tabBtn" data-tab="tablero">Tablero</button>
       </div>
+      <button class="iconBtn" id="themeToggle" title="Cambiar modo oscuro/claro">🌙</button>
       <button class="logoutBtn" id="logoutBtn">Cerrar sesión</button>
     </div>
   </header>
@@ -338,6 +432,10 @@
         <div class="full">
           <label for="taskTitle">Qué tienes pendiente</label>
           <input type="text" id="taskTitle" placeholder="Escribe tu pendiente" required maxlength="80">
+        </div>
+        <div class="full">
+          <label>Elige un emoji para reconocerlo rápido</label>
+          <div class="emojiRow" id="emojiRow"></div>
         </div>
         <div>
           <label for="taskCategory">Categoría</label>
@@ -353,9 +451,9 @@
         <div>
           <label for="taskUrgency">Nivel de urgencia</label>
           <select id="taskUrgency">
-            <option value="alta">Urgente</option>
-            <option value="media">Media</option>
-            <option value="baja" selected>Baja</option>
+            <option value="alta">🔥 Urgente</option>
+            <option value="media">⏳ Media</option>
+            <option value="baja" selected>🌱 Baja</option>
           </select>
         </div>
         <div>
@@ -373,6 +471,7 @@
     </div>
 
     <div class="filterBar">
+      <input type="text" id="searchInput" placeholder="Buscar un pendiente...">
       <select id="filterCategory">
         <option value="todas">Todas las categorías</option>
         <option value="personal">Personal</option>
@@ -380,9 +479,9 @@
       </select>
       <select id="filterUrgency">
         <option value="todas">Toda urgencia</option>
-        <option value="alta">Urgente</option>
-        <option value="media">Media</option>
-        <option value="baja">Baja</option>
+        <option value="alta">🔥 Urgente</option>
+        <option value="media">⏳ Media</option>
+        <option value="baja">🌱 Baja</option>
       </select>
       <select id="filterStatus">
         <option value="todas">Todo estado</option>
@@ -392,7 +491,21 @@
       </select>
     </div>
 
+    <div id="dateFilterBar"></div>
+
     <div id="taskList"><div class="loadingState">Cargando tus pendientes...</div></div>
+  </section>
+
+  <!-- Vista: calendario -->
+  <section id="calendarioTab" class="hidden">
+    <div class="card">
+      <div class="calHeader">
+        <button class="iconBtn" id="calPrevBtn">←</button>
+        <h3 id="calTitle"></h3>
+        <button class="iconBtn" id="calNextBtn">→</button>
+      </div>
+      <div class="calGrid" id="calGrid"></div>
+    </div>
   </section>
 
   <!-- Vista: tablero -->
@@ -420,7 +533,7 @@
       </div>
       <div class="catBarRow">
         <div class="catBarLabel"><span>Profesional</span><span id="profesionalPct">0%</span></div>
-        <div class="catBarTrack"><div class="catBarFill" id="profesionalBar" style="width:0%;background:var(--amber);"></div></div>
+        <div class="catBarTrack"><div class="catBarFill" id="profesionalBar" style="width:0%;background:var(--sky);"></div></div>
       </div>
     </div>
 
@@ -437,11 +550,31 @@
   </section>
 </div>
 
+<!-- Modal de confirmación para eliminar -->
+<div id="confirmModal" class="hidden modalOverlay">
+  <div class="card modalCard">
+    <p id="confirmText">¿Eliminar este pendiente?</p>
+    <div class="modalActions">
+      <button class="primaryBtn" id="confirmYesBtn" style="background:var(--lilac-dark);">Sí, eliminar</button>
+      <button class="primaryBtn" id="confirmNoBtn" style="background:var(--beige-dark);color:var(--text-dark);">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
 <script>
 (function(){
-  var COLORS = ['#8B8FE0','#E3B679','#8FBFA0','#E0838A','#6669B8','#C9A876'];
+  var COLORS = ['#8B8FE0','#7FA8D9','#C9A876','#6669B8','#4E7CB0','#3A3651'];
+  var EMOJIS = ['📌','📚','💼','🏠','💧','🧘','🛒','📞','🎯','💪','🎨','⭐'];
+
+  /* ---------- Modo oscuro (preferencia del aparato) ---------- */
+  var themeToggle;
+  function applyTheme(theme){
+    document.body.classList.toggle('dark', theme === 'dark');
+    if(themeToggle) themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+  }
+  applyTheme(localStorage.getItem('miPlannerTheme') || 'light');
 
   if(typeof window.supabase === 'undefined'){
     document.getElementById('authError').textContent = 'No se pudo cargar la conexión con tu base de datos. Revisa tu conexión a internet y recarga la página.';
@@ -453,6 +586,8 @@
 
   var tasks = [];
   var currentUser = null;
+  var dateFilter = null;
+  var calMonth = new Date();
 
   function todayStr(){
     var d = new Date();
@@ -474,6 +609,25 @@
     swatchRow.appendChild(el);
   });
 
+  /* ---------- Emoji del pendiente ---------- */
+  var selectedEmoji = EMOJIS[0];
+  var emojiRow = document.getElementById('emojiRow');
+  function renderEmojiRow(){
+    emojiRow.innerHTML = '';
+    EMOJIS.forEach(function(em){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'emojiBtn' + (em === selectedEmoji ? ' selected' : '');
+      btn.textContent = em;
+      btn.addEventListener('click', function(){
+        selectedEmoji = em;
+        renderEmojiRow();
+      });
+      emojiRow.appendChild(btn);
+    });
+  }
+  renderEmojiRow();
+
   /* ---------- Pantalla de cuenta: alternar crear / entrar ---------- */
   var isSignup = true;
   var authTitle = document.getElementById('authTitle');
@@ -483,6 +637,7 @@
   var authToggleBtn = document.getElementById('authToggleBtn');
   var authError = document.getElementById('authError');
   var authNote = document.getElementById('authNote');
+  var forgotBtn = document.getElementById('forgotBtn');
 
   function setAuthMode(signup){
     isSignup = signup;
@@ -495,6 +650,7 @@
       authSubmitBtn.textContent = 'Crear mi cuenta';
       authToggleBtn.textContent = 'Ya tengo cuenta, quiero entrar';
       document.getElementById('nameInput').required = true;
+      forgotBtn.classList.add('hidden');
     }else{
       authTitle.textContent = 'Hola de nuevo';
       authSubtitle.textContent = 'Entra con tu correo y tu contraseña.';
@@ -502,9 +658,32 @@
       authSubmitBtn.textContent = 'Entrar';
       authToggleBtn.textContent = 'No tengo cuenta, quiero crearla';
       document.getElementById('nameInput').required = false;
+      forgotBtn.classList.remove('hidden');
     }
   }
   authToggleBtn.addEventListener('click', function(){ setAuthMode(!isSignup); });
+
+  forgotBtn.addEventListener('click', function(){
+    authError.classList.add('hidden');
+    authNote.classList.add('hidden');
+    var email = document.getElementById('authEmail').value.trim();
+    if(!email){
+      showAuthError('Escribe tu correo arriba primero, para saber a dónde mandarte el link.');
+      return;
+    }
+    forgotBtn.disabled = true;
+    supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + window.location.pathname
+    }).then(function(res){
+      forgotBtn.disabled = false;
+      if(res.error){
+        showAuthError(res.error.message);
+        return;
+      }
+      authNote.textContent = 'Listo. Revisa tu correo (' + email + ') y entra al link para poner una contraseña nueva.';
+      authNote.classList.remove('hidden');
+    });
+  });
 
   function showAuthError(msg){
     authError.textContent = msg;
@@ -556,6 +735,34 @@
     }
   });
 
+  /* ---------- Poner contraseña nueva (llega desde el link del correo) ---------- */
+  var resetError = document.getElementById('resetError');
+  document.getElementById('resetForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    resetError.classList.add('hidden');
+    var newPassword = document.getElementById('newPassword').value;
+    var submitBtn = e.target.querySelector('button[type=submit]');
+    submitBtn.disabled = true;
+    supabase.auth.updateUser({ password: newPassword }).then(function(res){
+      submitBtn.disabled = false;
+      if(res.error){
+        resetError.textContent = res.error.message;
+        resetError.classList.remove('hidden');
+        return;
+      }
+      document.getElementById('resetScreen').classList.add('hidden');
+      boot(res.data.user);
+    });
+  });
+
+  supabase.auth.onAuthStateChange(function(event, session){
+    if(event === 'PASSWORD_RECOVERY'){
+      document.getElementById('authScreen').classList.add('hidden');
+      document.getElementById('app').classList.add('hidden');
+      document.getElementById('resetScreen').classList.remove('hidden');
+    }
+  });
+
   document.getElementById('logoutBtn').addEventListener('click', function(){
     supabase.auth.signOut().then(function(){
       currentUser = null;
@@ -564,6 +771,15 @@
       document.getElementById('authScreen').classList.remove('hidden');
       setAuthMode(true);
     });
+  });
+
+  /* ---------- Modo oscuro: botón ---------- */
+  themeToggle = document.getElementById('themeToggle');
+  applyTheme(localStorage.getItem('miPlannerTheme') || 'light');
+  themeToggle.addEventListener('click', function(){
+    var next = document.body.classList.contains('dark') ? 'light' : 'dark';
+    applyTheme(next);
+    localStorage.setItem('miPlannerTheme', next);
   });
 
   /* ---------- Arranque de la app tras entrar ---------- */
@@ -587,14 +803,19 @@
   /* ---------- Tabs ---------- */
   document.querySelectorAll('.tabBtn').forEach(function(btn){
     btn.addEventListener('click', function(){
-      document.querySelectorAll('.tabBtn').forEach(function(b){ b.classList.remove('active'); });
-      btn.classList.add('active');
-      var tab = btn.getAttribute('data-tab');
-      document.getElementById('tareasTab').classList.toggle('hidden', tab !== 'tareas');
-      document.getElementById('tableroTab').classList.toggle('hidden', tab !== 'tablero');
-      if(tab === 'tablero') renderDashboard();
+      selectTab(btn.getAttribute('data-tab'));
     });
   });
+  function selectTab(tab){
+    document.querySelectorAll('.tabBtn').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-tab') === tab);
+    });
+    document.getElementById('tareasTab').classList.toggle('hidden', tab !== 'tareas');
+    document.getElementById('calendarioTab').classList.toggle('hidden', tab !== 'calendario');
+    document.getElementById('tableroTab').classList.toggle('hidden', tab !== 'tablero');
+    if(tab === 'tablero') renderDashboard();
+    if(tab === 'calendario') renderCalendar();
+  }
 
   /* ---------- Cargar y guardar pendientes en Supabase ---------- */
   function loadTasks(){
@@ -617,6 +838,7 @@
     var newTask = {
       user_id: currentUser.id,
       title: title,
+      emoji: selectedEmoji,
       category: document.getElementById('taskCategory').value,
       tag: document.getElementById('taskTag').value.trim(),
       urgency: document.getElementById('taskUrgency').value,
@@ -632,6 +854,8 @@
       tasks.unshift(res.data[0]);
       e.target.reset();
       document.getElementById('taskUrgency').value = 'baja';
+      selectedEmoji = EMOJIS[0];
+      renderEmojiRow();
       renderTasks();
     });
   });
@@ -639,13 +863,29 @@
   ['filterCategory','filterUrgency','filterStatus'].forEach(function(id){
     document.getElementById(id).addEventListener('change', renderTasks);
   });
+  document.getElementById('searchInput').addEventListener('input', renderTasks);
 
-  var URGENCY_LABEL = { alta:'Urgente', media:'Media', baja:'Baja' };
+  var URGENCY_LABEL = { alta:'🔥 Urgente', media:'⏳ Media', baja:'🌱 Baja' };
   var STATUS_LABEL = { pendiente:'Pendiente', en_proceso:'En proceso', completado:'Completado' };
 
   function isOverdue(task){
     if(!task.due || task.status === 'completado') return false;
     return task.due < todayStr();
+  }
+
+  function daysUntil(dueStr){
+    var due = new Date(dueStr + 'T00:00:00');
+    var today = new Date(todayStr() + 'T00:00:00');
+    return Math.round((due - today) / 86400000);
+  }
+
+  function dueLabel(t){
+    if(!t.due || t.status === 'completado') return null;
+    var d = daysUntil(t.due);
+    if(d < 0) return { text: '⚠️ Vencido', overdue: true };
+    if(d === 0) return { text: '⏰ Hoy', overdue: false };
+    if(d === 1) return { text: '📅 Mañana', overdue: false };
+    return { text: '📅 En ' + d + ' días', overdue: false };
   }
 
   function updateTask(id, changes){
@@ -671,16 +911,63 @@
     });
   }
 
+  /* ---------- Modal de confirmación al eliminar ---------- */
+  var confirmModal = document.getElementById('confirmModal');
+  var confirmText = document.getElementById('confirmText');
+  var pendingDeleteId = null;
+  function askDelete(t){
+    pendingDeleteId = t.id;
+    confirmText.textContent = '¿Eliminar "' + t.title + '"? Esta acción no se puede deshacer.';
+    confirmModal.classList.remove('hidden');
+  }
+  document.getElementById('confirmYesBtn').addEventListener('click', function(){
+    if(pendingDeleteId){ deleteTask(pendingDeleteId); }
+    pendingDeleteId = null;
+    confirmModal.classList.add('hidden');
+  });
+  document.getElementById('confirmNoBtn').addEventListener('click', function(){
+    pendingDeleteId = null;
+    confirmModal.classList.add('hidden');
+  });
+
+  /* ---------- Filtro de fecha (llega desde el calendario) ---------- */
+  function setDateFilter(dateStr){
+    dateFilter = dateStr;
+    selectTab('tareas');
+    renderTasks();
+  }
+  function renderDateFilterBar(){
+    var bar = document.getElementById('dateFilterBar');
+    if(!dateFilter){ bar.innerHTML = ''; return; }
+    bar.innerHTML = '';
+    var chip = document.createElement('div');
+    chip.className = 'dateFilterChip';
+    chip.innerHTML = '<span>Filtrando por: ' + formatDate(dateFilter) + '</span>';
+    var closeBtn = document.createElement('button');
+    closeBtn.textContent = '✕';
+    closeBtn.addEventListener('click', function(){
+      dateFilter = null;
+      renderTasks();
+    });
+    chip.appendChild(closeBtn);
+    bar.appendChild(chip);
+  }
+
   function renderTasks(){
     var list = document.getElementById('taskList');
     var fCat = document.getElementById('filterCategory').value;
     var fUrg = document.getElementById('filterUrgency').value;
     var fSt = document.getElementById('filterStatus').value;
+    var q = document.getElementById('searchInput').value.trim().toLowerCase();
+
+    renderDateFilterBar();
 
     var filtered = tasks.filter(function(t){
       if(fCat !== 'todas' && t.category !== fCat) return false;
       if(fUrg !== 'todas' && t.urgency !== fUrg) return false;
       if(fSt !== 'todas' && t.status !== fSt) return false;
+      if(dateFilter && t.due !== dateFilter) return false;
+      if(q && t.title.toLowerCase().indexOf(q) === -1) return false;
       return true;
     });
 
@@ -706,7 +993,12 @@
 
     filtered.forEach(function(t){
       var card = document.createElement('div');
-      card.className = 'taskCard' + (t.status === 'completado' ? ' done' : '');
+      card.className = 'taskCard cat-' + t.category + (t.status === 'completado' ? ' done' : '');
+
+      var emojiEl = document.createElement('div');
+      emojiEl.className = 'taskEmoji';
+      emojiEl.textContent = t.emoji || '📌';
+      card.appendChild(emojiEl);
 
       var check = document.createElement('div');
       check.className = 'taskCheck' + (t.status === 'completado' ? ' checked' : '');
@@ -725,42 +1017,45 @@
       title.textContent = t.title;
       top.appendChild(title);
 
-      var catBadge = document.createElement('span');
-      catBadge.className = 'badge ' + t.category;
-      catBadge.textContent = t.category === 'personal' ? 'Personal' : 'Profesional';
-      top.appendChild(catBadge);
-
-      var urgBadge = document.createElement('span');
-      urgBadge.className = 'badge ' + t.urgency;
-      urgBadge.textContent = URGENCY_LABEL[t.urgency];
-      top.appendChild(urgBadge);
-
-      if(t.tag){
-        var tagBadge = document.createElement('span');
-        tagBadge.className = 'badge tag';
-        tagBadge.textContent = t.tag;
-        top.appendChild(tagBadge);
-      }
-      if(isOverdue(t)){
-        var overdueBadge = document.createElement('span');
-        overdueBadge.className = 'badge overdue';
-        overdueBadge.textContent = 'Vencido';
-        top.appendChild(overdueBadge);
+      var dl = dueLabel(t);
+      if(dl){
+        var pill = document.createElement('span');
+        pill.className = 'duePill' + (dl.overdue ? ' overdue' : '');
+        pill.textContent = dl.text;
+        top.appendChild(pill);
       }
       body.appendChild(top);
 
       var meta = document.createElement('div');
       meta.className = 'taskMeta';
-      if(t.due){
-        var dueSpan = document.createElement('span');
-        dueSpan.textContent = 'Fecha límite: ' + formatDate(t.due);
-        meta.appendChild(dueSpan);
+      var urgSpan = document.createElement('span');
+      urgSpan.className = 'badge';
+      urgSpan.textContent = URGENCY_LABEL[t.urgency];
+      meta.appendChild(urgSpan);
+      var catSpan = document.createElement('span');
+      catSpan.className = 'badge';
+      catSpan.textContent = t.category === 'personal' ? 'Personal' : 'Profesional';
+      meta.appendChild(catSpan);
+      if(t.tag){
+        var tagBadge = document.createElement('span');
+        tagBadge.className = 'badge';
+        tagBadge.textContent = t.tag;
+        meta.appendChild(tagBadge);
       }
       body.appendChild(meta);
+
+      if(t.due){
+        var dueSpan = document.createElement('div');
+        dueSpan.style.fontSize = '12px';
+        dueSpan.style.color = 'var(--text-muted)';
+        dueSpan.textContent = 'Fecha límite: ' + formatDate(t.due);
+        body.appendChild(dueSpan);
+      }
 
       if(t.notes){
         var notes = document.createElement('div');
         notes.className = 'taskNotes';
+        notes.style.marginTop = '4px';
         notes.textContent = t.notes;
         body.appendChild(notes);
       }
@@ -783,12 +1078,12 @@
       delBtn.className = 'deleteBtn';
       delBtn.textContent = 'Eliminar';
       delBtn.addEventListener('click', function(){
-        deleteTask(t.id);
+        askDelete(t);
       });
       actions.appendChild(statusSelect);
       actions.appendChild(delBtn);
 
-      card.appendChild(check);
+      card.insertBefore(check, emojiEl.nextSibling);
       card.appendChild(body);
       card.appendChild(actions);
       list.appendChild(card);
@@ -799,6 +1094,71 @@
     var parts = dstr.split('-');
     var meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
     return parts[2] + ' de ' + meses[parseInt(parts[1],10)-1] + ' de ' + parts[0];
+  }
+
+  /* ---------- Calendario ---------- */
+  var MESES_FULL = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  var DOW = ['Lu','Ma','Mi','Ju','Vi','Sá','Do'];
+
+  document.getElementById('calPrevBtn').addEventListener('click', function(){
+    calMonth.setMonth(calMonth.getMonth() - 1);
+    renderCalendar();
+  });
+  document.getElementById('calNextBtn').addEventListener('click', function(){
+    calMonth.setMonth(calMonth.getMonth() + 1);
+    renderCalendar();
+  });
+
+  function pad2(n){ return n < 10 ? '0' + n : '' + n; }
+
+  function renderCalendar(){
+    document.getElementById('calTitle').textContent = MESES_FULL[calMonth.getMonth()] + ' ' + calMonth.getFullYear();
+    var grid = document.getElementById('calGrid');
+    grid.innerHTML = '';
+    DOW.forEach(function(d){
+      var dowEl = document.createElement('div');
+      dowEl.className = 'calDow';
+      dowEl.textContent = d;
+      grid.appendChild(dowEl);
+    });
+
+    var year = calMonth.getFullYear();
+    var month = calMonth.getMonth();
+    var firstDay = new Date(year, month, 1);
+    var startOffset = (firstDay.getDay() + 6) % 7; // lunes = 0
+    var daysInMonth = new Date(year, month + 1, 0).getDate();
+    var today = todayStr();
+
+    var countsByDate = {};
+    tasks.forEach(function(t){
+      if(t.due && t.status !== 'completado'){
+        countsByDate[t.due] = (countsByDate[t.due] || 0) + 1;
+      }
+    });
+
+    var totalCells = Math.ceil((startOffset + daysInMonth) / 7) * 7;
+    for(var i = 0; i < totalCells; i++){
+      var dayNum = i - startOffset + 1;
+      var cell = document.createElement('div');
+      if(dayNum < 1 || dayNum > daysInMonth){
+        cell.className = 'calDay otherMonth';
+        cell.textContent = '';
+      }else{
+        var dateStr = year + '-' + pad2(month + 1) + '-' + pad2(dayNum);
+        cell.className = 'calDay' + (dateStr === today ? ' today' : '');
+        cell.innerHTML = '<span>' + dayNum + '</span>';
+        if(countsByDate[dateStr]){
+          var dot = document.createElement('span');
+          dot.className = 'calDot';
+          dot.textContent = countsByDate[dateStr];
+          cell.appendChild(dot);
+        }
+        cell.addEventListener('click', function(ds){
+          return function(){ setDateFilter(ds); };
+        }(dateStr));
+      }
+      grid.appendChild(cell);
+    }
   }
 
   /* ---------- Tablero ---------- */
@@ -835,7 +1195,7 @@
     }else{
       upcoming.forEach(function(t){
         var li = document.createElement('li');
-        li.innerHTML = '<span class="miniTitle">'+escapeHtml(t.title)+'</span><span class="miniMeta">'+formatDate(t.due)+'</span>';
+        li.innerHTML = '<span class="miniTitle">'+escapeHtml((t.emoji || '📌') + ' ' + t.title)+'</span><span class="miniMeta">'+formatDate(t.due)+'</span>';
         upcomingList.appendChild(li);
       });
     }
@@ -849,7 +1209,7 @@
       urgentSorted.forEach(function(t){
         var metaTxt = isOverdue(t) ? 'Vencido' : 'Urgente';
         var li = document.createElement('li');
-        li.innerHTML = '<span class="miniTitle">'+escapeHtml(t.title)+'</span><span class="miniMeta">'+metaTxt+'</span>';
+        li.innerHTML = '<span class="miniTitle">'+escapeHtml((t.emoji || '📌') + ' ' + t.title)+'</span><span class="miniMeta">'+metaTxt+'</span>';
         urgentList.appendChild(li);
       });
     }
