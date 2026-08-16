@@ -97,6 +97,15 @@
     color:var(--text-dark);
   }
   .setupCard input:focus{border-color:var(--lilac);}
+  .passwordField{position:relative;}
+  .passwordField input{padding-right:44px;}
+  .eyeBtn{
+    position:absolute;top:0;bottom:0;right:6px;margin:auto 0;
+    height:32px;width:32px;border:none;background:none;
+    font-size:16px;cursor:pointer;opacity:.6;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .eyeBtn:hover{opacity:1;}
   .swatchRow{
     display:flex;
     gap:10px;
@@ -372,7 +381,10 @@
       <input type="email" id="authEmail" required autocomplete="email">
 
       <label for="authPassword">Tu contraseña</label>
-      <input type="password" id="authPassword" required minlength="6" autocomplete="current-password">
+      <div class="passwordField">
+        <input type="password" id="authPassword" required minlength="6" autocomplete="current-password">
+        <button type="button" class="eyeBtn" data-target="authPassword">👁️</button>
+      </div>
 
       <div id="signupExtra">
         <label for="nameInput">Tu nombre</label>
@@ -397,7 +409,10 @@
     <div id="resetError" class="authError hidden"></div>
     <form id="resetForm">
       <label for="newPassword">Nueva contraseña</label>
-      <input type="password" id="newPassword" required minlength="6" autocomplete="new-password">
+      <div class="passwordField">
+        <input type="password" id="newPassword" required minlength="6" autocomplete="new-password">
+        <button type="button" class="eyeBtn" data-target="newPassword">👁️</button>
+      </div>
       <button type="submit" class="primaryBtn">Guardar nueva contraseña</button>
     </form>
   </div>
@@ -682,6 +697,15 @@
       }
       authNote.textContent = 'Listo. Revisa tu correo (' + email + ') y entra al link para poner una contraseña nueva.';
       authNote.classList.remove('hidden');
+    });
+  });
+
+  document.querySelectorAll('.eyeBtn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var input = document.getElementById(btn.getAttribute('data-target'));
+      var showing = input.type === 'text';
+      input.type = showing ? 'password' : 'text';
+      btn.textContent = showing ? '👁️' : '🙈';
     });
   });
 
