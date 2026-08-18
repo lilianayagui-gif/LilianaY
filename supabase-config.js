@@ -7,3 +7,7 @@
 
 const SUPABASE_URL = "https://hhxxrrvxycyujcvmbocg.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_o3jpLaaeaynmVGjNUuzn4w_Y9k7GW50";
+
+// Llave publica de notificaciones (VAPID). No es secreta, identifica a tu
+// app frente al navegador. Su pareja privada vive solo en Supabase, nunca aqui.
+const VAPID_PUBLIC_KEY = "BMVRLOct9m-JX-yDWORx3Lv1-EsEbJKUluzYCBA4XYDjQdgcihI0Fwc30feSV-4GFYQMwGKISueJefLegGxUQFA";
