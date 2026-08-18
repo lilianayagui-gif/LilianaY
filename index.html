@@ -446,7 +446,7 @@
   <!-- Vista: pendientes -->
   <section id="tareasTab">
     <div class="card" id="taskFormCard">
-      <h3>Agregar un pendiente</h3>
+      <h3 id="taskFormTitle">Agregar un pendiente</h3>
       <form id="taskForm">
         <div class="full">
           <label for="taskTitle">Qué tienes pendiente</label>
@@ -488,7 +488,8 @@
           <textarea id="taskNotes" maxlength="200" placeholder="Algún detalle que te sirva recordar"></textarea>
         </div>
         <div class="full">
-          <button type="submit" class="primaryBtn">Agregar pendiente</button>
+          <button type="submit" class="primaryBtn" id="taskSubmitBtn">Agregar pendiente</button>
+          <button type="button" class="linkBtn hidden" id="cancelEditBtn" style="display:block;text-align:center;width:100%;">Cancelar edición</button>
         </div>
       </form>
     </div>
@@ -959,13 +960,53 @@
     });
   }
 
-  /* ---------- Formulario de tareas ---------- */
+  /* ---------- Formulario de tareas: agregar o editar ---------- */
+  var editingTaskId = null;
+  var taskFormTitle = document.getElementById('taskFormTitle');
+  var taskSubmitBtn = document.getElementById('taskSubmitBtn');
+  var cancelEditBtn = document.getElementById('cancelEditBtn');
+
+  function resetTaskForm(){
+    editingTaskId = null;
+    document.getElementById('taskForm').reset();
+    document.getElementById('taskUrgency').value = 'baja';
+    selectedEmoji = EMOJIS[0];
+    renderEmojiRow();
+    taskFormTitle.textContent = 'Agregar un pendiente';
+    taskSubmitBtn.textContent = 'Agregar pendiente';
+    cancelEditBtn.classList.add('hidden');
+  }
+
+  function toDatetimeLocalValue(isoStr){
+    var d = new Date(isoStr);
+    var pad = function(n){ return n < 10 ? '0' + n : '' + n; };
+    return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  }
+
+  function startEdit(t){
+    editingTaskId = t.id;
+    document.getElementById('taskTitle').value = t.title;
+    selectedEmoji = t.emoji || EMOJIS[0];
+    renderEmojiRow();
+    document.getElementById('taskCategory').value = t.category;
+    document.getElementById('taskTag').value = t.tag || '';
+    document.getElementById('taskUrgency').value = t.urgency;
+    document.getElementById('taskDue').value = t.due || '';
+    document.getElementById('taskRemindAt').value = t.remind_at ? toDatetimeLocalValue(t.remind_at) : '';
+    document.getElementById('taskNotes').value = t.notes || '';
+    taskFormTitle.textContent = 'Editar pendiente';
+    taskSubmitBtn.textContent = 'Guardar cambios';
+    cancelEditBtn.classList.remove('hidden');
+    document.getElementById('taskFormCard').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  cancelEditBtn.addEventListener('click', resetTaskForm);
+
   document.getElementById('taskForm').addEventListener('submit', function(e){
     e.preventDefault();
     var title = document.getElementById('taskTitle').value.trim();
     if(!title) return;
-    var newTask = {
-      user_id: currentUser.id,
+    var taskData = {
       title: title,
       emoji: selectedEmoji,
       category: document.getElementById('taskCategory').value,
@@ -973,21 +1014,35 @@
       urgency: document.getElementById('taskUrgency').value,
       due: document.getElementById('taskDue').value || null,
       remind_at: document.getElementById('taskRemindAt').value ? new Date(document.getElementById('taskRemindAt').value).toISOString() : null,
-      notes: document.getElementById('taskNotes').value.trim(),
-      status: 'pendiente'
+      notes: document.getElementById('taskNotes').value.trim()
     };
-    supabase.from('tasks').insert(newTask).select().then(function(res){
-      if(res.error){
-        alert('No se pudo guardar tu pendiente: ' + res.error.message);
-        return;
-      }
-      tasks.unshift(res.data[0]);
-      e.target.reset();
-      document.getElementById('taskUrgency').value = 'baja';
-      selectedEmoji = EMOJIS[0];
-      renderEmojiRow();
-      renderTasks();
-    });
+
+    if(editingTaskId){
+      taskData.reminded = false;
+      var idToUpdate = editingTaskId;
+      supabase.from('tasks').update(taskData).eq('id', idToUpdate).select().then(function(res){
+        if(res.error){
+          alert('No se pudo guardar el cambio: ' + res.error.message);
+          return;
+        }
+        var t = tasks.find(function(x){ return x.id === idToUpdate; });
+        if(t) Object.assign(t, res.data[0]);
+        resetTaskForm();
+        renderTasks();
+      });
+    }else{
+      taskData.user_id = currentUser.id;
+      taskData.status = 'pendiente';
+      supabase.from('tasks').insert(taskData).select().then(function(res){
+        if(res.error){
+          alert('No se pudo guardar tu pendiente: ' + res.error.message);
+          return;
+        }
+        tasks.unshift(res.data[0]);
+        resetTaskForm();
+        renderTasks();
+      });
+    }
   });
 
   ['filterCategory','filterUrgency','filterStatus'].forEach(function(id){
@@ -1204,6 +1259,12 @@
       statusSelect.addEventListener('change', function(){
         updateTask(t.id, { status: statusSelect.value });
       });
+      var editBtn = document.createElement('button');
+      editBtn.className = 'deleteBtn';
+      editBtn.textContent = 'Editar';
+      editBtn.addEventListener('click', function(){
+        startEdit(t);
+      });
       var delBtn = document.createElement('button');
       delBtn.className = 'deleteBtn';
       delBtn.textContent = 'Eliminar';
@@ -1211,6 +1272,7 @@
         askDelete(t);
       });
       actions.appendChild(statusSelect);
+      actions.appendChild(editBtn);
       actions.appendChild(delBtn);
 
       card.insertBefore(check, emojiEl.nextSibling);
