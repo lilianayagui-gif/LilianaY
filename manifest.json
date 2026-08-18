@@ -1,0 +1,24 @@
+{
+  "name": "Mi Planner",
+  "short_name": "Mi Planner",
+  "description": "Tu espacio personal de pendientes",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F6F0E6",
+  "theme_color": "#8B8FE0",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
